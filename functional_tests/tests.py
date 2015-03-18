@@ -39,10 +39,9 @@ class NewVisitorTest(LiveServerTestCase):
     # When he hits enter, the page updates, and now the page lists "1: Buy skate 
     # boots" as an item in a todo list.
     inputbox.send_keys(Keys.ENTER)
-
-    table = self.browser.find_element_by_id('id_list_table')
-    rows = table.find_elements_by_tag_name('tr')
-    self.assertIn('1: Buy skate boots', [row.text for row in rows])
+    samson_list_url = self.browser.current_url
+    self.assertRegex(samson_list_url, '/lists/.+')
+    self.check_for_row_in_list_table('1: Buy skate boots')
 
     # There is still a text box inviting him to add another item. He enters
     # "Attach plates to skates".
@@ -54,11 +53,36 @@ class NewVisitorTest(LiveServerTestCase):
     self.check_for_row_in_list_table('1: Buy skate boots')
     self.check_for_row_in_list_table('2: Attach plates to skates')
 
-    # Samson wonders whether the site will remember his list. Then he sees that 
-    # it has generated a unique URL for him -- there is some explanatory text to
-    # that effect.
+    # Now a new user, Delilah, cines along to the site.
+
+    ## We use a new browser session to make sure that no information of Samson's
+    ## is coming through cookies.
+    self.browser.quit()
+    self.browser = webdriver.Firefox()
+
+    # Delilah visits the home page. There is no sign of Sampson's list.
+    self.browser.get(self.live_server_url)
+    page_text = self.browser.find_element_by_tag_name('body').text
+    self.assertNotIn('Buy skate boots', page_text)
+    self.assertNotIn('Attach plates', page_text)    
     self.fail('Finish the test!')
 
-    # He visits the URL - his to-do list is still there.
+    # Delilah starts a new list by entering an item. She is more dangerous than
+    # Samson.
+    inputbox = self.browser.find_element_by_id('id_new_item')
+    inputbox.send_keys('Buy clippers')
+    inputbox.send_keys(Keys.ENTER)
 
-    # Satisfied, he goes back to sleep.
+    # Delilah gets her own unique URL
+    delilah_list_url = self.browser.current_url
+    self.assertRegex(delilah_list_url, '/lists/.+')
+    self.assertNotEqual(delilah_list_url, samson_list_url)
+
+    # Again, there is no trace of Samson's list
+    page_text = self.browser.find_element_by_tag_name('body').text
+    self.assertNotIn('Buy skate boots', page_text)
+    self.assertIn('Buy clippers', page_text)  
+
+    # Satisfied, they both go back to sleep.
+
+
