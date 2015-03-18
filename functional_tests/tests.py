@@ -83,5 +83,3 @@ class NewVisitorTest(LiveServerTestCase):
     self.assertIn('Buy clippers', page_text)  
 
     # Satisfied, they both go back to sleep.
-    self.fail('Finish the test!')
-
