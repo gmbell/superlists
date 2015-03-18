@@ -11,6 +11,11 @@ class NewVisitorTest(unittest.TestCase):
   def tearDown(self):
     self.browser.quit()
 
+  def check_for_row_in_list_table(self, row_text):
+    table = self.browser.find_element_by_id('id_list_table')
+    rows = table.find_elements_by_tag_name('tr')
+    self.assertIn(row_text, [row.text for row in rows])   
+
   def test_can_start_a_list_and_retrieve_it_later(self):
     # Samson checks out a new to-do manager he has heard of.
     # He checks application homepage.
@@ -46,16 +51,14 @@ class NewVisitorTest(unittest.TestCase):
     inputbox.send_keys(Keys.ENTER)
 
     # The page updates again, and now shows both items on his list.
-    table = self.browser.find_element_by_id('id_list_table')
-    rows = table.find_elements_by_tag_name('tr')
-    self.assertIn('1: Buy skate boots', [row.text for row in rows])    
-    self.assertIn('2: Attach plates to skates', [row.text for row in rows])
+    self.check_for_row_in_list_table('1: Buy skate boots')
+    self.check_for_row_in_list_table('2: Attach plates to skates')
 
     # Samson wonders whether the site will remember his list. Then he sees that 
     # it has generated a unique URL for him -- there is some explanatory text to
     # that effect.
     self.fail('Finish the test!')
-    
+
     # He visits the URL - his to-do list is still there.
 
     # Satisfied, he goes back to sleep.
