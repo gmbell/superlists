@@ -65,7 +65,6 @@ class NewVisitorTest(LiveServerTestCase):
     page_text = self.browser.find_element_by_tag_name('body').text
     self.assertNotIn('Buy skate boots', page_text)
     self.assertNotIn('Attach plates', page_text)    
-    self.fail('Finish the test!')
 
     # Delilah starts a new list by entering an item. She is more dangerous than
     # Samson.
@@ -84,5 +83,5 @@ class NewVisitorTest(LiveServerTestCase):
     self.assertIn('Buy clippers', page_text)  
 
     # Satisfied, they both go back to sleep.
-
+    self.fail('Finish the test!')
 
