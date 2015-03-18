@@ -37,21 +37,25 @@ class NewVisitorTest(unittest.TestCase):
 
     table = self.browser.find_element_by_id('id_list_table')
     rows = table.find_elements_by_tag_name('tr')
-    self.assertTrue(
-      any(row.text == '1: Buy skate boots' for row in rows),
-      "New to-do item did not appear in table"
-      )
+    self.assertIn('1: Buy skate boots', [row.text for row in rows])
 
     # There is still a text box inviting him to add another item. He enters
     # "Attach plates to skates".
-    self.fail('Finish the test!')
+    inputbox = self.browser.find_element_by_id('id_new_item')
+    inputbox.send_keys('Attach plates to skates')
+    inputbox.send_keys(Keys.ENTER)
 
     # The page updates again, and now shows both items on his list.
+    table = self.browser.find_element_by_id('id_list_table')
+    rows = table.find_elements_by_tag_name('tr')
+    self.assertIn('1: Buy skate boots', [row.text for row in rows])    
+    self.assertIn('2: Attach plates to skates', [row.text for row in rows])
 
     # Samson wonders whether the site will remember his list. Then he sees that 
     # it has generated a unique URL for him -- there is some explanatory text to
     # that effect.
-
+    self.fail('Finish the test!')
+    
     # He visits the URL - his to-do list is still there.
 
     # Satisfied, he goes back to sleep.
