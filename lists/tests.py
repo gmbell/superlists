@@ -24,18 +24,24 @@ class HomePageTest(TestCase):
 class ListViewTest(TestCase):
 
   def test_uses_list_template(self):
-    response = self.client.get('/lists/the-only-list-in-the-world/')
+    list_ = List.objects.create()
+    response = self.client.get('/lists/{0}/'.format(list_.id,))
     self.assertTemplateUsed(response, 'list.html')
 
   def test_displays_all_items(self):
-    list_ = List.objects.create()
-    Item.objects.create(text='itemey 1', list=list_)
-    Item.objects.create(text='itemey 2', list=list_)
+    correct_list = List.objects.create()
+    Item.objects.create(text='itemey 1', list=correct_list)
+    Item.objects.create(text='itemey 2', list=correct_list)
+    other_list = List.objects.create()
+    Item.objects.create(text='other item 1', list=other_list)
+    Item.objects.create(text='other item 2', list=other_list)
 
-    response = self.client.get('/lists/the-only-list-in-the-world/')
+    response = self.client.get('/lists/{0}/'.format(correct_list.id,))
 
     self.assertContains(response, 'itemey 1')
     self.assertContains(response, 'itemey 2')
+    self.assertNotContains(response, 'other item  1')
+    self.assertNotContains(response, 'other item  2')
 
 class ListAndItemsModelsTest(TestCase):
 
